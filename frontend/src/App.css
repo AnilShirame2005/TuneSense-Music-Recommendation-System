@@ -1,0 +1,280 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f7;
+  color: #222;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+/* HEADER */
+
+.header {
+  background: #111827;
+  color: white;
+  padding: 25px 8%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+.header p {
+  margin: 5px 0 0;
+  color: #cbd5e1;
+}
+
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-box input {
+  width: 70px;
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+}
+
+/* MAIN */
+
+main {
+  width: 84%;
+  max-width: 1200px;
+  margin: 35px auto;
+}
+
+/* SEARCH */
+
+.search-card {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.search-card h2 {
+  margin-top: 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+  padding: 13px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 15px;
+  background: white;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.recommend-button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #111827;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.recommend-button:hover {
+  background: #374151;
+}
+
+.recommend-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ERROR */
+
+.error {
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* RECOMMENDATIONS */
+
+.recommendations {
+  margin-top: 40px;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title h2 {
+  margin: 0 0 20px;
+}
+
+/* EMPTY */
+
+.empty {
+  background: white;
+  padding: 60px 20px;
+  text-align: center;
+  border-radius: 15px;
+}
+
+.empty-icon {
+  font-size: 50px;
+}
+
+.empty h3 {
+  margin-bottom: 5px;
+}
+
+/* SONG CARDS */
+
+.song-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.song-card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
+}
+
+.album {
+  width: 65px;
+  height: 65px;
+  min-width: 65px;
+  border-radius: 10px;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.song-info {
+  flex: 1;
+}
+
+.song-info h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.artist {
+  margin: 5px 0;
+  color: #666;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.tags span {
+  background: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+}
+
+.score {
+  font-size: 12px;
+  color: #555;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.play,
+.like {
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.play {
+  padding: 8px 12px;
+  background: #111827;
+  color: white;
+}
+
+.like {
+  padding: 8px;
+  background: #f3f4f6;
+}
+
+/* FOOTER */
+
+footer {
+  text-align: center;
+  padding: 30px;
+  color: #777;
+}
+
+/* MOBILE */
+
+@media (max-width: 800px) {
+
+  .header {
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  main {
+    width: 92%;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .song-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
