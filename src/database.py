@@ -12,11 +12,10 @@ from sqlalchemy import (
     DateTime,
 )
 from sqlalchemy.orm import declarative_base, sessionmaker
-from sqlalchemy.engine import URL
 
 
 # ============================================================
-# MYSQL CONFIGURATION - AIVEN / RENDER
+# DATABASE CONFIGURATION - AIVEN / RENDER
 # ============================================================
 
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -26,17 +25,24 @@ if not DATABASE_URL:
         "DATABASE_URL environment variable is missing"
     )
 
-# Support both mysql:// and mysql+pymysql:// URLs.
-# URL.create safely handles special characters in passwords
-# when database credentials are supplied separately.
+# Convert standard MySQL URL to PyMySQL URL if necessary.
 if DATABASE_URL.startswith("mysql://"):
     DATABASE_URL = DATABASE_URL.replace(
         "mysql://",
         "mysql+pymysql://",
-        1
+        1,
     )
 
-# Aiven requires SSL for MySQL connections.
+# Remove query parameters such as ssl-mode=REQUIRED.
+# SSL is configured separately below for Aiven.
+if "?" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.split("?", 1)[0]
+
+
+# ============================================================
+# CREATE DATABASE ENGINE
+# ============================================================
+
 engine = create_engine(
     DATABASE_URL,
     echo=False,
@@ -53,7 +59,7 @@ engine = create_engine(
 SessionLocal = sessionmaker(
     autocommit=False,
     autoflush=False,
-    bind=engine
+    bind=engine,
 )
 
 
@@ -74,7 +80,7 @@ class User(Base):
     id = Column(
         Integer,
         primary_key=True,
-        autoincrement=True
+        autoincrement=True,
     )
 
     name = Column(String(100), nullable=False)
@@ -92,13 +98,13 @@ class Song(Base):
     id = Column(
         Integer,
         primary_key=True,
-        autoincrement=True
+        autoincrement=True,
     )
 
     track_id = Column(
         String(100),
         unique=True,
-        nullable=False
+        nullable=False,
     )
 
     track_name = Column(String(255), nullable=False)
@@ -126,7 +132,7 @@ class ListeningHistory(Base):
     id = Column(
         Integer,
         primary_key=True,
-        autoincrement=True
+        autoincrement=True,
     )
 
     user_id = Column(Integer, nullable=False)
@@ -134,7 +140,7 @@ class ListeningHistory(Base):
 
     played_at = Column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.utcnow,
     )
 
     completion_percentage = Column(Float, default=0)
@@ -153,7 +159,7 @@ class Like(Base):
     id = Column(
         Integer,
         primary_key=True,
-        autoincrement=True
+        autoincrement=True,
     )
 
     user_id = Column(Integer, nullable=False)
@@ -161,12 +167,12 @@ class Like(Base):
 
     created_at = Column(
         DateTime,
-        default=datetime.utcnow
+        default=datetime.utcnow,
     )
 
 
 # ============================================================
-# CREATE TABLES IF MISSING
+# CREATE MISSING TABLES
 # ============================================================
 
 Base.metadata.create_all(bind=engine)
