@@ -1,3 +1,7 @@
+
+import os
+from datetime import datetime
+
 from sqlalchemy import (
     create_engine,
     Column,
@@ -5,47 +9,40 @@ from sqlalchemy import (
     String,
     Float,
     Boolean,
-    DateTime
+    DateTime,
 )
-
 from sqlalchemy.orm import declarative_base, sessionmaker
-
-from datetime import datetime
-
-
-# ============================================================
-# MYSQL CONFIGURATION
-# ============================================================
-
-DB_USER = "root"
-
-DB_PASSWORD = "692005"
-
-DB_HOST = "localhost"
-
-DB_PORT = "3306"
-
-DB_NAME = "tunesense"
+from sqlalchemy.engine import URL
 
 
 # ============================================================
-# DATABASE URL
+# MYSQL CONFIGURATION - AIVEN / RENDER
 # ============================================================
 
-DATABASE_URL = (
-    f"mysql+pymysql://"
-    f"{DB_USER}:{DB_PASSWORD}"
-    f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
 
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL environment variable is missing"
+    )
 
-# ============================================================
-# CREATE DATABASE ENGINE
-# ============================================================
+# Support both mysql:// and mysql+pymysql:// URLs.
+# URL.create safely handles special characters in passwords
+# when database credentials are supplied separately.
+if DATABASE_URL.startswith("mysql://"):
+    DATABASE_URL = DATABASE_URL.replace(
+        "mysql://",
+        "mysql+pymysql://",
+        1
+    )
 
+# Aiven requires SSL for MySQL connections.
 engine = create_engine(
     DATABASE_URL,
-    echo=False
+    echo=False,
+    pool_pre_ping=True,
+    pool_recycle=300,
+    connect_args={"ssl": {}},
 )
 
 
@@ -72,7 +69,6 @@ Base = declarative_base()
 # ============================================================
 
 class User(Base):
-
     __tablename__ = "users"
 
     id = Column(
@@ -81,21 +77,9 @@ class User(Base):
         autoincrement=True
     )
 
-    name = Column(
-        String(100),
-        nullable=False
-    )
-
-    email = Column(
-        String(150),
-        unique=True,
-        nullable=False
-    )
-
-    password = Column(
-        String(255),
-        nullable=False
-    )
+    name = Column(String(100), nullable=False)
+    email = Column(String(150), unique=True, nullable=False)
+    password = Column(String(255), nullable=False)
 
 
 # ============================================================
@@ -103,7 +87,6 @@ class User(Base):
 # ============================================================
 
 class Song(Base):
-
     __tablename__ = "songs"
 
     id = Column(
@@ -118,54 +101,19 @@ class Song(Base):
         nullable=False
     )
 
-    track_name = Column(
-        String(255),
-        nullable=False
-    )
+    track_name = Column(String(255), nullable=False)
+    track_artist = Column(String(255))
+    genre = Column(String(100))
+    subgenre = Column(String(100))
+    mood = Column(String(50))
 
-    track_artist = Column(
-        String(255)
-    )
-
-    genre = Column(
-        String(100)
-    )
-
-    subgenre = Column(
-        String(100)
-    )
-
-    mood = Column(
-        String(50)
-    )
-
-    danceability = Column(
-        Float
-    )
-
-    energy = Column(
-        Float
-    )
-
-    acousticness = Column(
-        Float
-    )
-
-    instrumentalness = Column(
-        Float
-    )
-
-    valence = Column(
-        Float
-    )
-
-    tempo = Column(
-        Float
-    )
-
-    popularity = Column(
-        Integer
-    )
+    danceability = Column(Float)
+    energy = Column(Float)
+    acousticness = Column(Float)
+    instrumentalness = Column(Float)
+    valence = Column(Float)
+    tempo = Column(Float)
+    popularity = Column(Integer)
 
 
 # ============================================================
@@ -173,7 +121,6 @@ class Song(Base):
 # ============================================================
 
 class ListeningHistory(Base):
-
     __tablename__ = "listening_history"
 
     id = Column(
@@ -182,40 +129,18 @@ class ListeningHistory(Base):
         autoincrement=True
     )
 
-    user_id = Column(
-        Integer,
-        nullable=False
-    )
-
-    song_id = Column(
-        String(100),
-        nullable=False
-    )
+    user_id = Column(Integer, nullable=False)
+    song_id = Column(String(100), nullable=False)
 
     played_at = Column(
         DateTime,
         default=datetime.utcnow
     )
 
-    completion_percentage = Column(
-        Float,
-        default=0
-    )
-
-    completed = Column(
-        Boolean,
-        default=False
-    )
-
-    skipped = Column(
-        Boolean,
-        default=False
-    )
-
-    liked = Column(
-        Boolean,
-        default=False
-    )
+    completion_percentage = Column(Float, default=0)
+    completed = Column(Boolean, default=False)
+    skipped = Column(Boolean, default=False)
+    liked = Column(Boolean, default=False)
 
 
 # ============================================================
@@ -223,7 +148,6 @@ class ListeningHistory(Base):
 # ============================================================
 
 class Like(Base):
-
     __tablename__ = "likes"
 
     id = Column(
@@ -232,15 +156,8 @@ class Like(Base):
         autoincrement=True
     )
 
-    user_id = Column(
-        Integer,
-        nullable=False
-    )
-
-    song_id = Column(
-        String(100),
-        nullable=False
-    )
+    user_id = Column(Integer, nullable=False)
+    song_id = Column(String(100), nullable=False)
 
     created_at = Column(
         DateTime,
@@ -249,12 +166,10 @@ class Like(Base):
 
 
 # ============================================================
-# CREATE ALL TABLES
+# CREATE TABLES IF MISSING
 # ============================================================
 
-Base.metadata.create_all(
-    bind=engine
-)
+Base.metadata.create_all(bind=engine)
 
 
 # ============================================================
@@ -262,13 +177,9 @@ Base.metadata.create_all(
 # ============================================================
 
 def get_db():
-
     db = SessionLocal()
 
     try:
-
         yield db
-
     finally:
-
         db.close()
