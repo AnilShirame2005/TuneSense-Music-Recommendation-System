@@ -21,7 +21,8 @@ app.add_middleware(
         "http://127.0.0.1:5173",
         "https://tune-sense-music-recommendation-sys-five.vercel.app",
         "https://tune-sense-music-recommendation-system-git-277d0a-anilshirame2005.vercel.app",
-        "https://tune-sense-music-recommendation-system-4g55.vercel.app",
+        "https://tune-sense-music-recommendation-system-4g55-ip61gf37e.vercel.app",
+        "https://tune-sense-music-recommendation-sys-git-277d0a-anilshirame2005.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
